@@ -1,5 +1,5 @@
 # Global-CO2-Emissions-Analysis
-Global-CO2-Emissions-Analysis: A project analyzing and visualizing global CO2 emissions per capita, including data cleaning, adjustments, and generating insightful maps and histograms.
+This project involves analyzing and visualizing various global datasets, including CO2 emissions, GDP, population, and fertility rates. The project includes data cleaning, adjustments, and generating insightful visualizations such as maps and histograms.
 
 ## Table of Contents
 - [Project Overview](#project-overview)
@@ -16,12 +16,14 @@ Global-CO2-Emissions-Analysis: A project analyzing and visualizing global CO2 em
 
 ### project overview 
 
-This project analyzes global CO2 emissions data for the year 2023. The dataset includes details about country names, populations, and CO2 emissions. The aim is to identify patterns in CO2 emissions, such as the distribution of emissions per capita and the top countries with the highest emissions. This analysis demonstrates skills in data cleaning, manipulation, visualization, and statistical analysis.
+This project analyzes global data for the year 2023, including details about country names, populations, CO2 emissions, GDP, and fertility rates. The aim is to identify patterns in CO2 emissions, GDP per capita, and fertility rates, as well as to highlight the top countries in these metrics. This analysis demonstrates skills in data cleaning, manipulation, visualization, and statistical analysis.
 
 ---
 ![Rplot](https://github.com/NeoSphereAnalytics/Global-CO2-Emissions-Analysis/assets/174109528/d637c910-501d-4ea6-815d-c5c2ec8f2ef5)
 
 ![Rplot05](https://github.com/NeoSphereAnalytics/Global-CO2-Emissions-Analysis/assets/174109528/7b96bb60-f1f5-45af-b661-4c5acdcda3fd)
+
+![Rplot01](https://github.com/Ibrahim-Sereer/Global-CO2-Emissions-Analysis/assets/174109528/b56ab862-3caf-4f1b-a0ce-036bbc6ab285)
 
 ---
 
@@ -51,6 +53,7 @@ Total Aggregates:
   
 Country-specific Insights:
 - Which countries have the highest CO2 emissions per capita?
+- What is the relationship between GDP per capita and fertility rates?
 
 ---
 
@@ -168,6 +171,39 @@ histogram <- ggplot(top10_countries, aes(x = reorder(Country, `Co2-Emissions per
 # Display the histogram
 print(histogram)
 
+# Clean and prepare the data: handle any missing values and convert relevant columns to numeric
+data <- data %>%
+  mutate(GDP = as.numeric(gsub("[$,]", "", GDP)),
+         Population = as.numeric(gsub(",", "", Population)),
+         `Fertility Rate` = as.numeric(`Fertility Rate`)) %>%
+  filter(!is.na(GDP) & !is.na(`Fertility Rate`) & !is.na(Population))
+
+# Calculate GDP per capita
+data <- data %>%
+  mutate(GDP_per_capita = GDP / Population)
+
+# Perform linear regression
+model <- lm(`Fertility Rate` ~ GDP_per_capita, data = data)
+
+# Summarize the model
+summary(model)
+
+# Visualize the relationship with country labels
+ggplot(data, aes(x = GDP_per_capita, y = `Fertility Rate`)) +
+  geom_point() +
+  geom_smooth(method = "lm", col = "red") +
+  geom_text(aes(label = Country), size = 3, hjust = 0.5, vjust = -0.5, check_overlap = TRUE) +
+  scale_x_continuous(labels = scales::dollar) +
+  scale_y_continuous(expand = c(0, 0)) +
+  coord_cartesian(xlim = c(0, max(data$GDP_per_capita, na.rm = TRUE)), ylim = c(0, max(data$`Fertility Rate`, na.rm = TRUE))) +
+  labs(title = "Relationship between GDP per Capita and Fertility Rate",
+       x = "GDP per Capita (in USD)",
+       y = "Fertility Rate") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12))
+
 ```
 
 ---
@@ -177,10 +213,12 @@ print(histogram)
 Total Aggregates:
 - The dataset contains information on 195 unique countries.
 - CO2 emissions per capita vary significantly across countries, with some having very high emissions.
+- There is a noticeable relationship between GDP per capita and fertility rates.
   
 Country-specific Insights:
 - The United States, China, Canada, Saudia Arabia, and Russia are among the countries with the highest CO2 emissions per capita.
 - The top 10 countries with the highest CO2 emissions per capita include major industrial nations as well as some very small states with small populations.
+- Countries with Higher GDP per capita tends to correlate with lower fertility rates.
 
 ---
 
@@ -189,6 +227,7 @@ Country-specific Insights:
 - Implement targeted policies to reduce CO2 emissions in countries with the highest per capita emissions.
 - Promote the use of renewable energy sources to decrease reliance on fossil fuels.
 - Encourage international cooperation to address global CO2 emissions effectively.
+- Consider economic policies that address the relationship between GDP per capita and fertility rates.
 
 ---
 
@@ -196,7 +235,7 @@ Country-specific Insights:
 
 - Data Quality: The dataset's quality and completeness may affect the accuracy of the findings, and there may be inconsistencies or gaps in the reported values.
 - Temporal Scope: The dataset is limited to 2023 and may not capture trends over multiple years.
-- External Factors: The analysis does not account for external factors such as economic conditions, policies, or natural events that may influence CO2 emissions.
+- External Factors: The analysis does not account for external factors such as economic conditions, policies, or natural events that may influence CO2 emissions or fertility rates.
 
 ---
 
