@@ -1,4 +1,4 @@
-# Global-CO2-Emissions-Analysis
+# Global Data Analysis Project
 This project involves analyzing and visualizing various global datasets, including CO2 emissions, GDP, population, and fertility rates. The project includes data cleaning, adjustments, and generating insightful visualizations such as maps and histograms.
 
 ## Table of Contents
